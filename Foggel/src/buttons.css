@@ -1,0 +1,42 @@
+.btn {
+    padding: .7rem 1.5rem;
+    outline: none;
+    font-weight: 600;
+    cursor: pointer;
+    border: none;
+    transition: background .2s ease-in-out;    
+    border-radius: var(--border-radius-containers);
+}
+
+button span {
+    white-space: nowrap;
+}
+
+.search-btn {
+    background-color: var(--btn-bg-yellow);
+    color: var(--btn-font-clr-darkbrown);
+    box-shadow: inset 3px 3px 3px var(--shadow-light-yellow),
+        inset -3px -3px 3px var(--shadow-dark-yellow);
+
+    &:hover,
+    &:focus {
+        background-color: var(--btn-bg-hover-yellow);
+    }
+}
+
+.save-btn {
+    align-self: flex-end;
+}
+
+
+.add-bird-btn {
+    color: var(--btn-font-clr-lightyellow);
+    background-color: var(--btn-bg-green);
+    box-shadow: inset 3px 3px 3px var(--shadow-light-green),
+        inset -3px -3px 3px var(--shadow-dark-green);
+
+    &:hover,
+    &:focus {
+        background-color: var(--btn-bg-hover-green);
+    }
+}

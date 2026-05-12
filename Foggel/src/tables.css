@@ -1,0 +1,24 @@
+.observations-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+    border-radius: var(--border-radius-containers);
+}
+
+.observations-table th,
+.observations-table td {
+    padding: .5rem;
+}
+
+.observations-table tr:nth-child(even) {
+    background-color: var(--table-even-rows);
+}
+
+.observations-table th {
+    background-color: var(--bg-main);
+    color: var(--shadow-dark-brown);
+    text-align: left;
+    border-radius: var(--border-radius-containers);
+    box-shadow: inset 3px 3px 3px var(--shadow-light-brown),
+        inset -3px -3px 3px var(--shadow-dark-brown);
+}

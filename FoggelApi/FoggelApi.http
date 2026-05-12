@@ -1,0 +1,6 @@
+@FoggelApi_HostAddress = http://localhost:5216
+
+GET {{FoggelApi_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

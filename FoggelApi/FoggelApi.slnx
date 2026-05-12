@@ -1,0 +1,5 @@
+<Solution>
+  <Project Path="../Repositories/Repositories.csproj" Id="818dcadc-22c8-457d-88b3-b92f910151d7" />
+  <Project Path="../Services/Services.csproj" Id="a8e338a3-1cbe-4f4f-bcfb-7d5e73cb7ee2" />
+  <Project Path="FoggelApi.csproj" />
+</Solution>

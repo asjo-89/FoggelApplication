@@ -1,0 +1,60 @@
+:root {
+    /* #region Colors */
+    
+    --bg-main: #ecf7d3;
+
+    --reg-container-bg: #ece9d2e2;
+    --cards-bg: #a7966beb;
+    
+    --border: #34743fd1;
+    --box-shadow: #1f4102c9;
+    
+    --shadow-light-green: #cff8b9d1;
+    --shadow-dark-green: #1f4102b2;
+    --shadow-light-yellow: #f9ffc0d8;
+    --shadow-dark-yellow: #695205ce;
+    --shadow-light-brown: #d0c6b0eb;
+    --shadow-dark-brown: #242118d3;
+    
+    --input-bg: #c3eab4;
+    --input-bg-focus: #e4f9db;
+    --input-shadow-dark: #1f4102a2;
+    --input-shadow-light: #ffffffd1;
+    
+    --outline-focus: #1e5b20;
+    
+    --btn-bg-yellow: #e9c811;
+    --btn-bg-green: #067900;
+    --btn-bg-brown: #44360fcf;
+
+    --btn-border-yellow: #765c05ce;
+    --btn-border-green: #065a00;
+    --btn-border-brown: #392d0be9;
+    
+    --btn-bg-hover-yellow: #d4a50a;
+    --btn-bg-hover-green: #056800;
+    --btn-bg-hover-brown: #302609cf;
+    
+    --btn-outline-focus-yellow: #765c05ce;
+    --btn-outline-focus-green: #056800;
+    --btn-outline-focus-brown: #302609cf;
+    
+    --btn-font-clr-darkbrown: #1b1912;
+    --btn-font-clr-lightyellow: #dcfecd;
+    
+    --font-primary-clr: #ecfee4;
+
+    --menu-bg-clr: #f8d03ee0;
+    --menu-font-clr: #144100e8;
+    --menu-font-clr-hover: #6ea258;
+    
+    --table-even-rows: #ece9d224;
+
+    /* #endregion Colors */
+
+    /* #region Styling */
+
+    --border-radius-containers: .3rem;
+
+    /* #endregion Styling */
+}
