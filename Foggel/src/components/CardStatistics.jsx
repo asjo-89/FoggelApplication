@@ -4,49 +4,47 @@ import { FaCheck } from "react-icons/fa";
 
 const CardStatistics = () => {
     const birdFilterId = "bird-species-filter";
+    const yearFilterId = "year-filter";
     const monthFilterId = "month-filter";
 
   const [observations, setObservations] = useState([]);
-  const [filteredObservations, setFilteredObservations] = useState([]);
-  const [speciesFilter, setSpeciesFilter] = useState("");
+  const [yearFilter, setYearFilter] = useState(0);
   const [monthFilter, setMonthFilter] = useState("");
-  const [dropdownOpen, setDropdownOpen] = useState(false);
+  const [birdFilter, setBirdFilter] = useState("");
 
+  
+  const months = [
+      "Januari", "Februari", "Mars", "April", "Maj", "Juni",
+      "Juli", "Augusti", "September", "Oktober", "November", "December"
+    ];
+    
+    
+    
   useEffect(() => {
-    const fetchObservations = async () => {
-        try {
-            const response = await fetch(observationEndpoint);
-            const data = await response.json();
-            setObservations(data ?? []);
-        } catch (err) {
-            console.error(err);
-        }
-    };
+      const fetchObservations = async () => {
+          try {
+              const response = await fetch(observationEndpoint);
+              const data = await response.json();
+              setObservations(data ?? []);
+            } catch (err) {
+                console.error(err);
+            }
+        };
+        
+        fetchObservations();
+    }, []);
+    
+    const observationsList = Array.isArray(observations) 
+    ? observations.filter(o => {
+        const matchesYear = yearFilter === 0 || o.observationYear === yearFilter;
+        const matchesMonth = monthFilter === "" || o.monthName === monthFilter;
+        const matchesBird = birdFilter === "" || (o.speciesName || "").toLowerCase().includes(birdFilter.toLowerCase());
+        
+        return matchesYear && matchesMonth && matchesBird;
+    })
+    : [];
 
-    fetchObservations();
-  }, []);
-
-  function handleFilter(e) {
-    const eventId = e.target.id;
-
-    if(eventId === birdFilterId) {
-        const name = e.target.value.toLowerCase();
-        setFilteredObservations(
-            observations.filter(o => 
-                o.name.toLowerCase() === name
-            )
-        );
-    }
-    else if(eventId === monthFilterId) {
-        const month = Number(e.target.value);
-        setFilteredObservations(
-            observations.filter(o => 
-                o.month === month
-            )
-        );
-    }
-  }
-
+    const notFound = observationsList.length === 0;
   return (
     <div className="card">
         <div className="card-top">
@@ -54,62 +52,40 @@ const CardStatistics = () => {
             <div className="filter-group"> 
                 <input id={birdFilterId} 
                     className="input-field" 
-                    onChange={handleFilter}
-                    placeholder="Ange fågelart..." /> 
-                <input id={monthFilterId} 
-                    className="input-field" 
-                    onClick={() => setDropdownOpen(true)} 
-                    onChange={handleFilter}
-                    placeholder="Välj månad..." />  
-                <div className={`dropdown ${dropdownOpen == true ? "open" : ""}`}>
-                    <ul>
-                        {/* <li className="suggestion-item" >
-                        </li> */}
-                    </ul>
-                </div>
-                {/* <button onClick={updateObservationListWithFilters}>
-                    Sök
-                </button>                */}
+                    // onChange={handleFilter}
+                    onChange={(e => setBirdFilter(e.target.value ?? ""))}
+                    value={birdFilter}
+                    placeholder="Ange fågelart..." />
+                
+                <select className="input-field" id={yearFilterId}
+                    onChange={(e => setYearFilter(parseInt(e.target.value) || 0))}
+                    value={yearFilter}
+                >
+                    <option value="">Välj år...</option>
+                    { 
+                        Array.from(
+                            {length: 50},
+                            (_, index) => new Date().getFullYear() - index
+                        ).map(year => (
+                            <option key={year} value={year}>{year}</option>
+                        ))
+                    }
+                </select>
+
+                <select className="input-field" id={monthFilterId}
+                    onChange={(e => setMonthFilter(e.target.value ?? ""))}
+                    value={monthFilter}
+                >
+                    <option value="">Välj månad...</option>                    
+                    {
+                        months.map(month => 
+                        <option key={month} value={month}>{month}</option>)
+                    }
+                </select>
             </div>
-            {/* <div className="checkbox-container">
-                <label htmlFor="year-checkbox" className="checkbox-group">
-                    <input id="year-checkbox" type="checkbox" />
-                    <div className="checkbox">
-                        <FaCheck className="check-icon" color="#144100e8" />
-                    </div>
-                    <p>År</p>
-                </label>
-                <label htmlFor="month-checkbox" className="checkbox-group">
-                    <input id="month-checkbox" type="checkbox" />
-                    <div className="checkbox">
-                        <FaCheck className="check-icon" color="#144100e8" />
-                    </div>
-                    <p>Månad</p>
-                </label>
-                <label htmlFor="species-name-checkbox" className="checkbox-group">
-                    <input id="species-name-checkbox" type="checkbox" />
-                    <div className="checkbox">
-                        <FaCheck className="check-icon" color="#144100e8" />
-                    </div>
-                    <p>Fågelart</p>
-                </label>
-                <label htmlFor="created-date-checkbox" className="checkbox-group">
-                    <input id="created-date-checkbox" type="checkbox" />
-                    <div className="checkbox">
-                        <FaCheck className="check-icon" color="#144100e8" />
-                    </div>
-                    <p>Skapad</p>
-                </label>
-            </div> */}
+            
         </div>
-        {/* <figure className="image-frame">
-            <img src="/images/magpie.jpg" alt="Skata." />
-            <figcaption>Skata</figcaption>
-        </figure>
-        <figure className="image-frame">
-            <img src="/images/gråsiska.jpg" alt="Gråsiska." />
-            <figcaption>Gråsiska</figcaption>
-        </figure> */}
+        
         <table className="observations-table">
             <thead>
                 <tr>
@@ -120,14 +96,35 @@ const CardStatistics = () => {
                 </tr>
             </thead>
             <tbody>
-                {Array.isArray(observations) && observations.map((obs, index) => (
-                    <tr key={obs.id ?? index}>
-                        <td>{obs.observationYear}</td>
-                        <td>{obs.monthName}</td>
-                        <td>{obs.speciesName}</td>
-                        <td>{new Date(obs.createdDate).toLocaleDateString("sv-SE")}</td>
-                    </tr>
-                ))}
+                {
+                    notFound 
+                    ? <tr><td colSpan="4">Inga observationer hittades.</td></tr> 
+                    : observationsList.map((obs, index) => (
+                        <tr key={obs.id ?? index}>
+                            <td>{obs.observationYear}</td>
+                            <td>{obs.monthName}</td>
+                            <td>{obs.speciesName}</td>
+                            <td>{new Date(obs.createdDate).toLocaleDateString("sv-SE")}</td>
+                        </tr>
+                    ))
+                    // filteredObservations.length === 0
+                    //     ?  Array.isArray(observations) && observations.map((obs, index) => (
+                    //         <tr key={obs.id ?? index}>
+                    //             <td>{obs.observationYear}</td>
+                    //             <td>{months[obs.observationMonth - 1]}</td>
+                    //             <td>{obs.speciesName}</td>
+                    //             <td>{new Date(obs.createdDate).toLocaleDateString("sv-SE")}</td>
+                    //         </tr>
+                    //         ))
+                    //         :Array.isArray(filteredObservations) && filteredObservations.map((obs, index) => (
+                    //         <tr key={obs.id ?? index}>
+                    //             <td>{obs.observationYear}</td>
+                    //             <td>{months[obs.observationMonth - 1]}</td>
+                    //             <td>{obs.speciesName}</td>
+                    //             <td>{new Date(obs.createdDate).toLocaleDateString("sv-SE")}</td>
+                    //         </tr>
+                    // ))
+                }
             </tbody>
         </table>
     </div>

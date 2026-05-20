@@ -71,8 +71,7 @@ namespace Repositories.Repositories
         public async Task<EntityResult<List<Vw_total_list>>> GetAllObservationsAsync()
         {
             var observations = await _dbContext.ViewTotalObservations
-                .OrderByDescending(o => o.ObservationYear)
-                .ThenByDescending(o => o.Månadsnummer)
+                .OrderByDescending(o => o.CreatedDate)
                 .AsNoTracking()
                 .ToListAsync();
 
