@@ -15,6 +15,8 @@ builder.Services.AddScoped<ObservationService>();
 builder.Services.AddScoped<ObservationRepository>();
 builder.Services.AddScoped<BirdsService>();
 builder.Services.AddScoped<BirdsRepository>();
+builder.Services.AddScoped<ImageService>();
+builder.Services.AddScoped<ImageRepository>();
 
 builder.Services.AddControllers();
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi

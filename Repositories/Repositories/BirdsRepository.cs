@@ -19,7 +19,7 @@ namespace Repositories.Repositories
             try
             {
                 var birds = await _dbContext.Species
-                    .Include(s => s.Observations)
+                    //.Include(s => s.Observations)
                     .OrderBy(s => s.SpeciesName)
                     .ToListAsync();
                 return new EntityResult<List<Species>>
@@ -39,5 +39,6 @@ namespace Repositories.Repositories
                 };
             }
         }
+
     }
 }

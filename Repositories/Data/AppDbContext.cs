@@ -23,6 +23,7 @@ public partial class AppDbContext : DbContext
     public virtual DbSet<ObservationMonth> ObservationMonths { get; set; }
 
     public virtual DbSet<Species> Species { get; set; }
+    public virtual DbSet<SpeciesFiles> SpeciesFiles { get; set; }
 
     public virtual DbSet<SpeciesFilesMetadatum> SpeciesFilesMetadata { get; set; }
 
@@ -63,6 +64,25 @@ public partial class AppDbContext : DbContext
         modelBuilder.Entity<Species>(entity =>
         {
             entity.HasKey(e => e.SpeciesId).HasName("PK__Species__A938045F9B499056");
+        });
+
+        modelBuilder.Entity<SpeciesFiles>(entity =>
+        {
+            entity.ToTable("SpeciesFiles");
+
+            entity.HasKey(x => x.StreamId);
+
+            entity.Property(x => x.StreamId)
+                .HasColumnName("stream_id");
+
+            entity.Property(x => x.FileData)
+                .HasColumnName("file_stream");
+
+            entity.Property(x => x.FileName)
+                .HasColumnName("name");
+
+            entity.Property(x => x.FileType)
+                .HasColumnName("file_type");
         });
 
         modelBuilder.Entity<SpeciesFilesMetadatum>(entity =>

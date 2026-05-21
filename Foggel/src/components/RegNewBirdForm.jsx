@@ -1,5 +1,5 @@
 import {  useEffect, useRef, useState } from "react";
-import { birdsEndpoint, observationEndpoint } from "../API/apiUrl";
+import { birdsEndpoint, observationEndpoint, imageEndpoint } from "../API/apiUrl";
 import { FaRegSmileBeam, FaRegAngry  } from "react-icons/fa";
 
 
@@ -8,7 +8,7 @@ const RegNewBirdForm = () => {
     var dropdownBirdsRef = useRef(null);
 
     var [birdOpen, setBirdOpen] = useState(false);
-    var [birds, setBirds] = useState();
+    var [birds, setBirds] = useState([]);
     var [searchBirds, setSearchBirds] = useState("");
     var [searchResult, setSearchResult] = useState([]);
 
@@ -154,6 +154,9 @@ const RegNewBirdForm = () => {
                                 <li key={bird.id} 
                                     className="suggestion-item" 
                                     onClick={() => handleBirdChange(bird)}>
+                                        {bird.fileId && (
+                                            <img style={{ width: "40px", height: "32px", objectFit: "cover" }} src={`${imageEndpoint}?fileId=${bird.fileId}`} alt={bird.name} />
+                                        )}
                                     {bird.name}
                                 </li>
                             )}
