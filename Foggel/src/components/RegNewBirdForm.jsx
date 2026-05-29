@@ -4,7 +4,7 @@ import { FaRegSmileBeam, FaRegAngry  } from "react-icons/fa";
 
 
 
-const RegNewBirdForm = () => {
+const RegNewBirdForm = ({ birdUrl, onAddedBird }) => {
     var dropdownBirdsRef = useRef(null);
 
     var [birdOpen, setBirdOpen] = useState(false);
@@ -12,12 +12,18 @@ const RegNewBirdForm = () => {
     var [searchBirds, setSearchBirds] = useState("");
     var [searchResult, setSearchResult] = useState([]);
 
-    var [selectedBird, setSelectedBird] = useState("");
     var [selectedYear, setSelectedYear] = useState("");
     var [selectedMonth, setSelectedMonth] = useState("");
 
     var [successMessage, setSuccessMessage] = useState("");
     var [errorMessage, setErrorMessage] = useState("");
+
+    var [selectedIndex, setSelectedIndex] = useState(-1);
+
+  const months = [
+      "Januari", "Februari", "Mars", "April", "Maj", "Juni",
+      "Juli", "Augusti", "September", "Oktober", "November", "December"
+    ];
 
     var formModel = useRef({
         speciesId: null,
@@ -52,36 +58,46 @@ const RegNewBirdForm = () => {
     }, []);
 
     function handleBirdChange(bird) {
+        console.log("Selected bird:", bird);
         formModel.current.speciesId = bird.id;
         formModel.current.speciesName = bird.name;
+        formModel.current.fileId = bird.fileId;
         setSearchBirds(bird.name);
         setBirdOpen(false);
+        setSearchResult([]);
+        setSelectedIndex(-1);
+        birdUrl(bird.fileId ? `${imageEndpoint}?fileId=${bird.fileId}` : "#");
     };
 
     function handleDateChange(year, month) {
+        console.log(year, month);
         if(year != null){
             formModel.current.year = Number(year);
             setSelectedYear(year);
         }
         else if(month != null) {          
-            formModel.current.month = Number(month);
+            formModel.current.month = months.indexOf(month) + 1;
             setSelectedMonth(month);
         }
     };
 
     function handleBirdSearch(input) {
+        console.log("Handle bird search input:", input);
         setSearchBirds(input);
-        if(!input) {
-            setSearchResult([]);
+        setBirdOpen(true);
+        if(!input || input === "") {
+            console.log("Empty input, clearing search results.");
+            // setSearchResult([]);
+            setSelectedIndex(-1);
             return;
         }
         const result = birds.filter(bird => 
             bird.name.toLowerCase().startsWith(input.toLowerCase())
         )
         setSearchResult(result);
+        setSelectedIndex(result.length > 0 ? 0 : -1);
     }
     
-
     async function handleSave(e) {
         e.preventDefault();
         setErrorMessage("");
@@ -112,6 +128,7 @@ const RegNewBirdForm = () => {
         }
         validForm = true;
         if(validForm) {
+            console.log(formModel.current);
             try {
                 const response = await fetch(observationEndpoint, {
                     method: 'POST',
@@ -123,83 +140,126 @@ const RegNewBirdForm = () => {
                 const data = await response.json();
                 if(response.ok) {
                     setSuccessMessage(data.message);
-                    setBirds(prev => [...prev, formModel.current]);
+                    onAddedBird();
+                    setSearchBirds("");
+                    setSelectedIndex(-1);
                 }
                 else {
                     setErrorMessage(data.message);
+                    setSearchBirds("");
+                    setSelectedIndex(-1);
+                    return;
                 }
             }
-            catch(err) {
+            catch(error) {
                 setErrorMessage("Något gick fel. Försök igen.");
+                console.error("Error saving observation:", error);
+                setSearchBirds("");
+                setSelectedIndex(-1);
             };
         }
     };
 
+    function handleKeyDown(e) {
+        if(e.key === "Enter" && birdOpen && searchResult.length > 0 && selectedIndex >= 0) {
+            console.log("Enter pressed");
+            e.preventDefault();
+            handleBirdChange(searchResult[selectedIndex]);
+        }
+        else if(e.key === "Escape" && birdOpen) {
+            console.log("Escape pressed");
+            e.preventDefault();
+            setBirdOpen(false);
+        }
+        else if(e.key === "ArrowDown" && birdOpen && searchResult.length > 0) {
+            console.log("ArrowDown pressed");
+            e.preventDefault();
+            setSelectedIndex(prev => {
+                const nextIndex = prev + 1;
+                return nextIndex >= searchResult.length ? 0 : nextIndex;
+            });
+        }
+        else if(e.key === "ArrowUp" && birdOpen && searchResult.length > 0) {
+            console.log("ArrowUp pressed");
+            e.preventDefault();
+            setSelectedIndex(prev => {
+                const nextIndex = prev - 1;
+                return nextIndex < 0 ? searchResult.length - 1 : nextIndex;
+            });
+        }
+    }
+
   return (
-    <form className="register-new-form" onSubmit={(e) => handleSave(e)}> 
-        
-        <div className="input-group">  
-            <div className="dropdown-group" ref={dropdownBirdsRef}>     
-                <input 
-                    id="dropdown-input"
-                    onClick={() => setBirdOpen(true)} 
-                    onChange={(e) => handleBirdSearch(e.target.value)}
-                    value={searchBirds} 
-                    placeholder="Välj fågel..." 
-                    className="input-field" /> 
-                <div className={`dropdown ${birdOpen == true ? "open" : ""}`}>
-                    {searchResult.length > 0 && (
-                        <ul>
-                            {searchResult.map(bird => 
-                                <li key={bird.id} 
-                                    className="suggestion-item" 
+    <><form className="register-new-form" onSubmit={(e) => handleSave(e)}>
+
+          <div className="input-group">
+              <div className="dropdown-group" ref={dropdownBirdsRef}>
+                  <input
+                      id="dropdown-input"
+                      onKeyDown={handleKeyDown}
+                      onFocus={() => { setBirdOpen(true); setSearchResult(birds); }}
+                      onClick={() => { setBirdOpen(true); setSearchResult(birds); }}
+                      onChange={(e) => handleBirdSearch(e.target.value)}
+                      value={searchBirds}
+                      placeholder="Välj en fågel från listan..."
+                      className="input-field" />
+                        <ul className={`dropdown ${birdOpen == true ? "open" : ""}`}>
+                            {searchResult.map((bird, index) => (
+                                <li key={bird.id}
+                                    className={`suggestion-item ${index === selectedIndex ? "selected" : ""}`}
                                     onClick={() => handleBirdChange(bird)}>
-                                        {bird.fileId && (
-                                            <img style={{ width: "40px", height: "32px", objectFit: "cover" }} src={`${imageEndpoint}?fileId=${bird.fileId}`} alt={bird.name} />
-                                        )}
                                     {bird.name}
                                 </li>
-                            )}
+                            ))}
                         </ul>
-                    )}
-                </div>
-            </div>
-            {/* <button className="btn border add-bird-btn">
-                <span>Lägg till ny fågel</span>
-            </button> */}
-        </div>
-        <div className="input-group">
-            <input onChange={(e) => {e.target.value != null && setSelectedYear(e.target.value)}}
-                onBlur={(e) => handleDateChange(e.target.value, null)} 
-                placeholder="ÅÅÅÅ" 
-                type="number" 
-                className="input-field" />
-            <input onChange={(e) => {e.target.value != null && setSelectedMonth(e.target.value)}}
-                onBlur={(e) => handleDateChange(null, e.target.value)} 
-                placeholder="MM" 
-                type="number" 
-                className="input-field" />
-        </div>
-        <div className="form-bottom">
-            {successMessage != "" && (
-            <div className="form-message success">
-                <FaRegSmileBeam size="24px" />
-                <p>{successMessage}</p>
-            </div> 
-            )}
-            {errorMessage != "" && (
-            <div className="form-message error">
-                <FaRegAngry size="24px" />
-                <p>{errorMessage}</p>
-            </div>
-            )}
-            <button type="submit" className="btn border add-bird-btn save-btn">
-                <span>
-                    Spara
-                </span>
-            </button>
-        </div>
-    </form>
+              </div>
+              {/* <button className="btn border add-bird-btn">
+        <span>Lägg till ny fågel</span>
+    </button> */}
+          </div>
+          <div className="input-group">
+                  <select className="input-field" onChange={(e) => handleDateChange(e.target.value, null)} value={selectedYear}>
+                    <option value="">Välj år...</option>
+                    { 
+                        Array.from(
+                            {length: 50},
+                            (_, index) => new Date().getFullYear() - index
+                        ).map(year => (
+                            <option key={year} value={year}>{year}</option>
+                        ))
+                    }
+                </select>
+
+                <select className="input-field" onChange={(e) => handleDateChange(null, e.target.value)} value={selectedMonth}>
+                    <option value="">Välj månad...</option>                    
+                    {
+                        months.map(month => 
+                        <option key={month} value={month}>{month}</option>)
+                    }
+                </select>
+          </div>
+          <div className="form-bottom">
+              {successMessage != "" && (
+                  <div className="form-message success">
+                      <FaRegSmileBeam size="24px" />
+                      <p>{successMessage}</p>
+                  </div>
+              )}
+              {errorMessage != "" && (
+                  <div className="form-message error">
+                      <FaRegAngry size="24px" />
+                      <p>{errorMessage}</p>
+                  </div>
+              )}
+              <button type="submit" className="btn border add-bird-btn save-btn">
+                  <span>
+                      Spara
+                  </span>
+              </button>
+          </div>
+      </form>
+      
+    </>
   )
 }
 

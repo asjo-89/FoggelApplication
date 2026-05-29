@@ -28,16 +28,6 @@ namespace Repositories.Repositories
                 };
             }
 
-            var allreadyExists = await _dbContext.Observations.FirstOrDefaultAsync(o => o.SpeciesId == observation.SpeciesId);
-            if(allreadyExists != null)
-            {
-                return new EntityResult<Observation>
-                {
-                    Success = false,
-                    Message = $"{observation.SpeciesName ?? "Fågeln"} är redan registrerad den månaden."
-                };
-            }
-
             var storedProcedure = "exec usp_AddObservation @ObservationYear, @ObservationMonth, @SpeciesName, @ResultOutput OUTPUT";
             var parameters = new[]
                 {
@@ -64,14 +54,16 @@ namespace Repositories.Repositories
                 : new EntityResult<Observation>
                     {
                         Success = false,
-                        Message = "Registrering misslyckades..."
+                        Message = "Fågeln är redan registrerad den perioden."
                     };
         }
 
         public async Task<EntityResult<List<Vw_total_list>>> GetAllObservationsAsync()
         {
             var observations = await _dbContext.ViewTotalObservations
-                .OrderByDescending(o => o.CreatedDate)
+                .OrderByDescending(o => o.ObservationYear)
+                .ThenByDescending(o => o.Månadsnummer)
+                .ThenBy(o => o.SpeciesName)
                 .AsNoTracking()
                 .ToListAsync();
 

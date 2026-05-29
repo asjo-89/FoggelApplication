@@ -1,13 +1,11 @@
-import React, { useEffect, useState } from 'react'
-import { observationEndpoint } from '../API/apiUrl'
+import React, { useState } from 'react'
 import { FaCheck } from "react-icons/fa";
 
-const CardStatistics = () => {
+const CardStatistics = ({ birds }) => {
     const birdFilterId = "bird-species-filter";
     const yearFilterId = "year-filter";
     const monthFilterId = "month-filter";
 
-  const [observations, setObservations] = useState([]);
   const [yearFilter, setYearFilter] = useState(0);
   const [monthFilter, setMonthFilter] = useState("");
   const [birdFilter, setBirdFilter] = useState("");
@@ -19,23 +17,8 @@ const CardStatistics = () => {
     ];
     
     
-    
-  useEffect(() => {
-      const fetchObservations = async () => {
-          try {
-              const response = await fetch(observationEndpoint);
-              const data = await response.json();
-              setObservations(data ?? []);
-            } catch (err) {
-                console.error(err);
-            }
-        };
-        
-        fetchObservations();
-    }, []);
-    
-    const observationsList = Array.isArray(observations) 
-    ? observations.filter(o => {
+    const observationsList = Array.isArray(birds) && birds.length > 0
+    ? birds.filter(o => {
         const matchesYear = yearFilter === 0 || o.observationYear === yearFilter;
         const matchesMonth = monthFilter === "" || o.monthName === monthFilter;
         const matchesBird = birdFilter === "" || (o.speciesName || "").toLowerCase().includes(birdFilter.toLowerCase());
@@ -107,23 +90,6 @@ const CardStatistics = () => {
                             <td>{new Date(obs.createdDate).toLocaleDateString("sv-SE")}</td>
                         </tr>
                     ))
-                    // filteredObservations.length === 0
-                    //     ?  Array.isArray(observations) && observations.map((obs, index) => (
-                    //         <tr key={obs.id ?? index}>
-                    //             <td>{obs.observationYear}</td>
-                    //             <td>{months[obs.observationMonth - 1]}</td>
-                    //             <td>{obs.speciesName}</td>
-                    //             <td>{new Date(obs.createdDate).toLocaleDateString("sv-SE")}</td>
-                    //         </tr>
-                    //         ))
-                    //         :Array.isArray(filteredObservations) && filteredObservations.map((obs, index) => (
-                    //         <tr key={obs.id ?? index}>
-                    //             <td>{obs.observationYear}</td>
-                    //             <td>{months[obs.observationMonth - 1]}</td>
-                    //             <td>{obs.speciesName}</td>
-                    //             <td>{new Date(obs.createdDate).toLocaleDateString("sv-SE")}</td>
-                    //         </tr>
-                    // ))
                 }
             </tbody>
         </table>

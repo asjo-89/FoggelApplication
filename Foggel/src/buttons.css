@@ -37,6 +37,10 @@ button span {
 
     &:hover,
     &:focus {
-        background-color: var(--btn-bg-hover-green);
+        background-color: var(--btn-bg-active-green);
+    }
+
+    &:active {
+        background-color: var(--btn-bg-active-green);
     }
 }

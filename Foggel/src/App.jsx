@@ -1,10 +1,27 @@
+import { useState } from "react"
 import CardStatistics from "./components/CardStatistics"
 import Menu from "./components/menu"
 import RegNewBirdForm from "./components/regNewBirdForm"
+import { FaEarlybirds } from "react-icons/fa";
+import { observationEndpoint } from "./API/apiUrl";
 
 
 function App() {
   
+  const [selectedBirdUrl, setSelectedBirdUrl] = useState("");
+  const [birds, setBirds] = useState([]);
+
+  const fetchObservations = async () => {
+      try {
+          const response = await fetch(observationEndpoint);
+          const data = await response.json();
+          setBirds(data ?? []);
+        } catch (err) {
+            console.error(err);
+        }
+    };
+    
+    fetchObservations();
 
   return (
     <>
@@ -25,11 +42,17 @@ function App() {
 
           <section className="content-section">
             <section className="register-new-section">
-              <RegNewBirdForm />
+              <RegNewBirdForm birdUrl={setSelectedBirdUrl} onAddedBird={fetchObservations}/>
+                <div className="bird-preview">
+                  {selectedBirdUrl.startsWith("http") ? 
+                    <img src={ selectedBirdUrl } alt="Fågel" /> :
+                    <FaEarlybirds size={100} style={{ position: "absolute", top: "50%", left: "50%", transform: "translate(-50%, -50%)", zIndex: 1 }} color={"var(--shadow-dark-green)"} />
+                  }
+                </div>
             </section>
             
             <section>
-              <CardStatistics />
+              <CardStatistics birds={birds} />
             </section>
           </section>
         </main>
