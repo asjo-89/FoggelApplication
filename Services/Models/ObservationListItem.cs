@@ -11,6 +11,7 @@ namespace Services.Models
         public string MonthName { get; set; } = null!;
         public byte Månadsnummer { get; set; }
         public string SpeciesName { get; set; } = null!;
+        public string LocationName { get; set; } = null!;
         public DateTime? CreatedDate { get; set; }
     }
 }

@@ -3,13 +3,13 @@ using System.Collections.Generic;
 
 namespace Repositories.Entities;
 
-public partial class ObservationMonth
+public partial class Location
 {
-    public int ObservationMonthId { get; set; }
+    public int Id { get; set; }
 
-    public int ObservationYear { get; set; }
+    public string LocationName { get; set; } = null!;
 
-    public int ObservationMonth1 { get; set; }
+    public DateTime CreatedDate { get; set; }
 
     public virtual ICollection<Observation> Observations { get; set; } = new List<Observation>();
 }

@@ -10,4 +10,10 @@ namespace Repositories.Models
         public bool Success { get; set; }
         public string Message { get; set; } = null!;
     }
+
+    public class EntityResult
+    {
+        public bool Success { get; set; }
+        public string Message { get; set; } = null!;
+    }
 }

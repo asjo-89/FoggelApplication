@@ -10,5 +10,7 @@ namespace Repositories.Models
         public int Year { get; set; }
         public int Month { get; set; }
         public string SpeciesName { get; set; } = null!;
+        public string? LocationName { get; set; }
+        public int LocationId { get; set; }
     }
 }

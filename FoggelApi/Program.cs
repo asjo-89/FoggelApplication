@@ -1,7 +1,7 @@
 using Azure;
 using FoggelApi.MiddleWare;
 using Microsoft.EntityFrameworkCore;
-using Repositories.Data;
+using Repositories.Context;
 using Repositories.Repositories;
 using Services.Services;
 

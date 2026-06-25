@@ -1,6 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
-using Repositories.Data;
+using Repositories.Context;
 using Repositories.Entities;
 using Repositories.Models;
 using System;

@@ -75,7 +75,7 @@ const CardStatistics = ({ birds }) => {
                     <th>År</th>
                     <th>Månad</th>
                     <th>Fågelart</th>
-                    <th>Skapad</th>
+                    <th>Plats</th>
                 </tr>
             </thead>
             <tbody>
@@ -87,7 +87,8 @@ const CardStatistics = ({ birds }) => {
                             <td>{obs.observationYear}</td>
                             <td>{obs.monthName}</td>
                             <td>{obs.speciesName}</td>
-                            <td>{new Date(obs.createdDate).toLocaleDateString("sv-SE")}</td>
+                            <td>{obs.locationName}</td>
+                            {/* <td>{new Date(obs.createdDate).toLocaleDateString("sv-SE")}</td> */}
                         </tr>
                     ))
                 }

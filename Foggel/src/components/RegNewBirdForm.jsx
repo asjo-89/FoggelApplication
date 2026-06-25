@@ -190,32 +190,37 @@ const RegNewBirdForm = ({ birdUrl, onAddedBird }) => {
     }
 
   return (
-    <><form className="register-new-form" onSubmit={(e) => handleSave(e)}>
+    <>
+        <form className="register-new-form" onSubmit={(e) => handleSave(e)}>
 
           <div className="input-group">
               <div className="dropdown-group" ref={dropdownBirdsRef}>
-                  <input
-                      id="dropdown-input"
-                      onKeyDown={handleKeyDown}
-                      onFocus={() => { setBirdOpen(true); setSearchResult(birds); }}
-                      onClick={() => { setBirdOpen(true); setSearchResult(birds); }}
-                      onChange={(e) => handleBirdSearch(e.target.value)}
-                      value={searchBirds}
-                      placeholder="Välj en fågel från listan..."
-                      className="input-field" />
-                        <ul className={`dropdown ${birdOpen == true ? "open" : ""}`}>
-                            {searchResult.map((bird, index) => (
-                                <li key={bird.id}
-                                    className={`suggestion-item ${index === selectedIndex ? "selected" : ""}`}
-                                    onClick={() => handleBirdChange(bird)}>
-                                    {bird.name}
-                                </li>
-                            ))}
-                        </ul>
+                <input
+                    id="dropdown-input"
+                    onKeyDown={handleKeyDown}
+                    onFocus={() => { setBirdOpen(true); setSearchResult(birds); }}
+                    onClick={() => { setBirdOpen(true); setSearchResult(birds); }}
+                    onChange={(e) => handleBirdSearch(e.target.value)}
+                    value={searchBirds}
+                    placeholder="Välj en fågel från listan..."
+                    className="input-field" />
+                <ul className={`dropdown ${birdOpen == true ? "open" : ""}`}>
+                    {searchResult.map((bird, index) => (
+                        <li key={bird.id}
+                            className={`suggestion-item ${index === selectedIndex ? "selected" : ""}`}
+                            onClick={() => handleBirdChange(bird)}>
+                            {bird.name}
+                        </li>
+                    ))}
+                </ul>
               </div>
-              {/* <button className="btn border add-bird-btn">
-        <span>Lägg till ny fågel</span>
-    </button> */}
+          </div>
+          <div className="input-group">
+            <select className="input-field">
+                <option className="suggestion-item" disabled>Välj plats...</option>
+                <option className="suggestion-item">Trädgård</option>
+                <option className="suggestion-item">Grövelsjön</option>
+            </select>
           </div>
           <div className="input-group">
                   <select className="input-field" onChange={(e) => handleDateChange(e.target.value, null)} value={selectedYear}>

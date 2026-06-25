@@ -30,7 +30,8 @@ namespace Services.Services
                 SpeciesId = form.SpeciesId,
                 Year = form.Year,
                 Month = form.Month,
-                SpeciesName = form.SpeciesName
+                SpeciesName = form.SpeciesName,
+                LocationId = form.LocationId
             };
 
             var result = await _repo.AddObservationAsync(observation);
@@ -70,6 +71,7 @@ namespace Services.Services
                     MonthName = entity.MonthName,
                     Månadsnummer = entity.Månadsnummer,
                     SpeciesName = entity.SpeciesName,
+                    LocationName = entity.LocationName ?? "",
                     CreatedDate = entity.CreatedDate
                 };
                 modelList.Add(observation);
@@ -81,6 +83,30 @@ namespace Services.Services
                 Model = modelList,
                 Message = listResult.Message ?? ""
             };
+        }
+    
+        public async Task<ModelResult> DeleteObservationAsync(ObservationModel observation)
+        {
+            if(observation == null)
+            {
+                return new ModelResult
+                {
+                    Success = false,
+                    Message = "Det gick inte att ta bort observationen. Försök igen."
+                };
+            }
+
+            var entity = new Observation
+            {
+                ObservationId = observation.Id,
+                ObservationMonthId = observation.MonthId,
+                SpeciesId = observation.SpeciesId,
+                CreatedDate = observation.CreatedDate
+            };
+
+            var deleted = await _repo.DeleteObservationAsync(entity);
+
+            return new ModelResult { Success = deleted.Success, Message = deleted.Message };
         }
     }
 }

@@ -1,7 +1,7 @@
 ﻿using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
-using Repositories.Data;
+using Repositories.Context;
 using Repositories.Entities;
 using Repositories.Models;
 using System;
@@ -28,12 +28,13 @@ namespace Repositories.Repositories
                 };
             }
 
-            var storedProcedure = "exec usp_AddObservation @ObservationYear, @ObservationMonth, @SpeciesName, @ResultOutput OUTPUT";
+            var storedProcedure = "exec usp_AddObservation @ObservationYear, @ObservationMonth, @SpeciesName, @Location, @ResultOutput OUTPUT";
             var parameters = new[]
                 {
                     new SqlParameter("@ObservationYear", observation.Year),
                     new SqlParameter("@ObservationMonth", observation.Month),
                     new SqlParameter("@SpeciesName", observation.SpeciesName),
+                    new SqlParameter("@Location", observation.LocationId),
                     new SqlParameter
                     {
                         ParameterName = "@ResultOutput",
@@ -58,26 +59,77 @@ namespace Repositories.Repositories
                     };
         }
 
-        public async Task<EntityResult<List<Vw_total_list>>> GetAllObservationsAsync()
+        public async Task<EntityResult<List<VwTotalList>>> GetAllObservationsAsync()
         {
-            var observations = await _dbContext.ViewTotalObservations
+            var observations = await _dbContext.VwTotalLists
                 .OrderByDescending(o => o.ObservationYear)
                 .ThenByDescending(o => o.Månadsnummer)
                 .ThenBy(o => o.SpeciesName)
+                .ThenBy(o => o.LocationName)
                 .AsNoTracking()
                 .ToListAsync();
 
             return observations.Count > 0 
-                ? new EntityResult<List<Vw_total_list>>
+                ? new EntityResult<List<VwTotalList>>
                     {
                         Success = true,
                         Entity = observations
                     } 
-                : new EntityResult<List<Vw_total_list>>
+                : new EntityResult<List<VwTotalList>>
                     {
                         Success = false,
                         Message = "Det finns inga observationer att visa..."
                     };
+        }
+    
+        public async Task<EntityResult> DeleteObservationAsync(Observation observation)
+        {
+            if(observation == null)
+            {
+                _logger.LogWarning("The observation model is null.");
+                return new EntityResult
+                {
+                    Success = false,
+                    Message = "Något gick fel. Försök igen."
+                };
+            }
+
+            _dbContext.Remove(observation!);
+
+            try
+            {
+                var result = await _dbContext.SaveChangesAsync();
+
+                return result == 1
+                    ? new EntityResult
+                    {
+                        Success = true,
+                        Message = "Observationen är borttagen."
+                    }
+                    : new EntityResult
+                    {
+                        Success = false,
+                        Message = "Det gick inte att ta bort observationen."
+                    };
+            }
+            catch(DBConcurrencyException ex)
+            {
+                _logger.LogWarning("Unable to delete observation. " + ex);
+                return new EntityResult
+                {
+                    Success = false,
+                    Message = "Det gick inte att ta bort observationen."
+                };
+            }
+            catch(Exception ex)
+            {
+                _logger.LogWarning("Something went wrong when deleting observation." + ex);
+                return new EntityResult
+                {
+                    Success = false,
+                    Message = "Det gick inte att ta bort observationen."
+                };
+            }
         }
     }
 }
