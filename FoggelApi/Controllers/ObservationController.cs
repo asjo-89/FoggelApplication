@@ -47,15 +47,15 @@ namespace FoggelApi.Controllers
             return Ok(new { message = result.Message, model = form });    
         }
 
-        [HttpDelete]
-        public async Task<IActionResult> DeleteObservatino([FromBody] ObservationModel observation)
+        [HttpDelete("{observationId:int}")]
+        public async Task<IActionResult> DeleteObservation(int observationId)
         {
-            if(!ModelState.IsValid)
+            if(!ModelState.IsValid || observationId == 0)
             {
                 return BadRequest("Något gick fel. Försök igen.");
             }
 
-            var result = await _service.DeleteObservationAsync(observation);
+            var result = await _service.DeleteObservationAsync(observationId);
 
             if(!result.Success)
             {

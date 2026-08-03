@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 import { FaCheck } from "react-icons/fa";
 
-const CardStatistics = ({ birds }) => {
+const CardStatistics = ({ birds, deletedObservation }) => {
     const birdFilterId = "bird-species-filter";
     const yearFilterId = "year-filter";
     const monthFilterId = "month-filter";
@@ -83,11 +83,14 @@ const CardStatistics = ({ birds }) => {
                     notFound 
                     ? <tr><td colSpan="4">Inga observationer hittades.</td></tr> 
                     : observationsList.map((obs, index) => (
-                        <tr key={obs.id ?? index}>
+                        <tr key={obs.observationId ?? index}>
                             <td>{obs.observationYear}</td>
                             <td>{obs.monthName}</td>
                             <td>{obs.speciesName}</td>
                             <td>{obs.locationName}</td>
+                            <td>
+                                <button className="delete-button" onClick={() => deletedObservation(obs.observationId ?? index)}>X</button>
+                            </td>
                             {/* <td>{new Date(obs.createdDate).toLocaleDateString("sv-SE")}</td> */}
                         </tr>
                     ))

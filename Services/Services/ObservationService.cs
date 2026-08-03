@@ -67,6 +67,7 @@ namespace Services.Services
             {
                 var observation = new ObservationListItem
                 {
+                    ObservationId = entity.ObservationId,
                     ObservationYear = entity.ObservationYear,
                     MonthName = entity.MonthName,
                     Månadsnummer = entity.Månadsnummer,
@@ -85,9 +86,9 @@ namespace Services.Services
             };
         }
     
-        public async Task<ModelResult> DeleteObservationAsync(ObservationModel observation)
+        public async Task<ModelResult> DeleteObservationAsync(int observationId)
         {
-            if(observation == null)
+            if(observationId == 0)
             {
                 return new ModelResult
                 {
@@ -96,15 +97,25 @@ namespace Services.Services
                 };
             }
 
-            var entity = new Observation
-            {
-                ObservationId = observation.Id,
-                ObservationMonthId = observation.MonthId,
-                SpeciesId = observation.SpeciesId,
-                CreatedDate = observation.CreatedDate
-            };
+            var observation = _repo.GetOneObservation(observationId);
 
-            var deleted = await _repo.DeleteObservationAsync(entity);
+            if(observation == null)
+            {
+                return new ModelResult
+                {
+                    Success = false,
+                    Message = "Observationen hittades inte och kunde inte tas bort. Försök igen."
+                };
+            }
+            //var entity = new Observation
+            //{
+            //    ObservationId = observation.Id,
+            //    ObservationMonthId = observation.MonthId,
+            //    SpeciesId = observation.SpeciesId,
+            //    CreatedDate = observation.CreatedDate
+            //};
+
+            var deleted = await _repo.DeleteObservationAsync(observation);
 
             return new ModelResult { Success = deleted.Success, Message = deleted.Message };
         }

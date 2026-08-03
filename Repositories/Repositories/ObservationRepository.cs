@@ -81,7 +81,14 @@ namespace Repositories.Repositories
                         Message = "Det finns inga observationer att visa..."
                     };
         }
-    
+
+        public Observation GetOneObservation(int observationId)
+        {
+            var observation = _dbContext.Observations.FirstOrDefault(x => x.ObservationId == observationId);
+            return observation ?? new Observation();
+        }
+
+
         public async Task<EntityResult> DeleteObservationAsync(Observation observation)
         {
             if(observation == null)

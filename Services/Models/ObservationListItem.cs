@@ -7,6 +7,7 @@ namespace Services.Models
 {
     public class ObservationListItem
     {
+        public int ObservationId { get; set; }
         public int ObservationYear { get; set; }
         public string MonthName { get; set; } = null!;
         public byte Månadsnummer { get; set; }
