@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react"
 import CardStatistics from "./components/CardStatistics"
-import Menu from "./components/menu"
-import RegNewBirdForm from "./components/regNewBirdForm"
+import Menu from "./components/Menu"
+import RegNewBirdForm from "./components/RegNewBirdForm"
 import { FaEarlybirds, FaRegSmileBeam, FaRegAngry  } from "react-icons/fa";
 import { observationEndpoint } from "./API/apiUrl";
 
